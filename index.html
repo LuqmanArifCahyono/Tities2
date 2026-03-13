@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tities.app</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ========================================= */
+        /* macOS BASE DESIGN */
+        /* ========================================= */
+        :root {
+            /* Wallpaper Big Sur yang stabil via GitHub */
+            --mac-bg: url('https://raw.githubusercontent.com/vinceliuice/WhiteSur-wallpapers/master/1080p/BigSur.jpg'); 
+            --window-bg: rgba(255, 255, 255, 0.95);
+            --sidebar-bg: rgba(238, 238, 238, 0.6);
+            --mac-border: rgba(0, 0, 0, 0.1);
+            --mac-blue: #007aff;
+            --mac-text: #333333;
+            --mac-text-light: #7c7c80;
+            --mac-selection: #0063e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+            background-color: #a4c8e1; 
+            background-image: var(--mac-bg);
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            -webkit-font-smoothing: antialiased; overflow: hidden;
+        }
+
+        /* Jendela macOS Utama */
+        .mac-window {
+            width: 900px; height: 600px; max-width: 95vw; max-height: 90vh; background: var(--window-bg); border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Title Bar */
+        .title-bar { height: 50px; background: transparent; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--mac-border); position: relative; }
+        .traffic-lights { display: flex; gap: 8px; }
+        .light { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .close { background-color: #ff5f56; border: 0.5px solid #e0443e; }
+        .min { background-color: #ffbd2e; border: 0.5px solid #dea123; }
+        .max { background-color: #27c93f; border: 0.5px solid #1aab29; }
+        .window-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 600; color: #4d4d4d; letter-spacing: 0.5px; }
+
+        /* Layout Area */
+        .window-body { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar Kiri */
+        .sidebar { width: 220px; background: var(--sidebar-bg); border-right: 1px solid var(--mac-border); padding: 15px 10px; box-sizing: border-box; display: flex; flex-direction: column; gap: 5px; }
+        .sidebar-section { font-size: 11px; font-weight: 600; color: var(--mac-text-light); text-transform: uppercase; margin: 15px 0 5px 10px; letter-spacing: 0.5px; }
+        .sidebar-item { padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--mac-text); display: flex; align-items: center; gap: 10px; transition: background 0.2s, color 0.2s; }
+        .sidebar-item:hover { background: rgba(0,0,0,0.05); }
+        .sidebar-item.active { background: var(--mac-selection); color: white; font-weight: 500; }
+        .sidebar-item.active i { color: white !important; }
+        .sidebar-item i { font-size: 14px; width: 16px; text-align: center; }
+        .icon-blue { color: var(--mac-blue); } .icon-green { color: #34c759; } .icon-pink { color: #ff2d55; } .icon-yellow { color: #ffcc00; } .icon-dark { color: #333; }
+
+        /* Area Konten Utama */
+        .main-content { flex: 1; background: #ffffff; position: relative; overflow-y: auto; overflow-x: hidden; }
+        
+        /* CLASS UNTUK MENGUNCI SCROLL SAAT PREVIEW */
+        .no-scroll { overflow: hidden !important; }
+
+        .page { display: none; padding: 40px; box-sizing: border-box; height: 100%; animation: fadeIn 0.4s ease; position: relative; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Typography */
+        h1 { font-size: 28px; font-weight: 700; margin-top: 0; color: #1d1d1f; }
+        h2 { font-size: 20px; font-weight: 600; margin-top: 0; color: #1d1d1f; }
+        p { font-size: 14px; color: #515154; line-height: 1.5; }
+
+        /* Button macOS */
+        .mac-btn { background: var(--mac-blue); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: 0.2s; }
+        .mac-btn:hover { background: #0069d9; }
+        .mac-btn-outline { background: transparent; color: #333; border: 1px solid #d1d1d6; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .mac-btn-outline:hover { background: #f2f2f7; }
+
+        /* --- STYLING TIAP HALAMAN --- */
+        .welcome-container { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
+        .welcome-img { width: 100px; margin-bottom: 20px; border-radius: 15px; }
+
+        /* PHOTOS GALLERY 18 GRID */
+        .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; padding-bottom: 30px; }
+        .photo-item { aspect-ratio: 1/1; background: #f2f2f7; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--mac-border); transition: transform 0.2s, box-shadow 0.2s; cursor: zoom-in; }
+        .photo-item:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 2; } 
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ========================================= */
+        /* LIGHTBOX GALLERY (Zoom Foto Ultra Smooth) */
+        /* ========================================= */
+        .lightbox-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            /* Background Blur Glassmorphism macOS */
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); 
+            z-index: 50; display: none; justify-content: center; align-items: center; opacity: 0; 
+            /* Transisi masuk jendela Lightbox */
+            transition: opacity 0.4s ease; 
+        }
+        .lightbox-overlay.active { display: flex; opacity: 1; }
+        
+        .lightbox-overlay img { 
+            max-width: 85%; max-height: 85%; border-radius: 10px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); object-fit: contain; 
+            animation: zoomInPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            /* --- INI KUNCI GESER SMOOTH --- */
+            /* Transisi opacity untuk efek fade-in/fade-out saat geser foto */
+            transition: opacity 0.3s ease-in-out; 
+            opacity: 1; /* Default state: terlihat */
+        }
+        
+        @keyframes zoomInPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* Tombol Navigasi ala Mac (Gelap, Transparan) */
+        .lb-btn { position: absolute; background: rgba(0,0,0,0.4); border: none; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; cursor: pointer; transition: background 0.2s, transform 0.2s; display: flex; justify-content: center; align-items: center; z-index: 60; }
+        .lb-btn:hover { background: rgba(0,0,0,0.6); transform: scale(1.1); }
+        
+        .lb-close { top: 20px; right: 20px; }
+        .lb-prev { left: 20px; top: 50%; transform: translateY(-50%); }
+        .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
+        /* Memastikan tombol navigasi tidak ikut geser transformnya saat hover */
+        .lb-prev:hover, .lb-next:hover { transform: translateY(-50%) scale(1.1); }
+
+        /* (Gaya pesan tetap sama) */
+        .messages-app { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; }
+        .msg-time { text-align: center; color: var(--mac-text-light); font-size: 11px; margin: 20px 0 10px; font-weight: 500; }
+        .bubble { padding: 8px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; margin-bottom: 5px; max-width: 75%; width: fit-content; }
+        .bubble.left { align-self: flex-start; background: #e9e9eb; color: black; border-bottom-left-radius: 4px; }
+        .bubble.right { align-self: flex-end; background: var(--mac-blue); color: white; border-bottom-right-radius: 4px; }
+        .flower-imessage { align-self: flex-start; margin: 10px 0; max-width: 250px; } .flower-imessage img { width: 100%; border-radius: 12px; border: 1px solid var(--mac-border); }
+
+        /* (Gaya Musik, Catatan, Kupon tetap sama) */
+        .music-app { display: flex; gap: 40px; align-items: center; justify-content: center; height: 100%; }
+        .album-art { width: 220px; height: 220px; border-radius: 10px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); overflow: hidden; cursor: pointer; transition: 0.3s; }
+        .album-art:hover { transform: translateY(-5px); } .album-art img { width: 100%; height: 100%; object-fit: cover; }
+        .music-info { max-width: 300px; }
+        .progress-bar { width: 100%; height: 4px; background: #e5e5ea; border-radius: 2px; margin: 20px 0 10px; }
+        .progress-fill { width: 30%; height: 100%; background: #333; border-radius: 2px; }
+        .music-controls { display: flex; gap: 30px; align-items: center; font-size: 24px; color: #333; margin-top: 20px; }
+        
+        .notes-app { background: #fef8a0; padding: 40px; border-radius: 5px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); min-height: 100%; box-sizing: border-box; font-family: "SF Pro Text", sans-serif; }
+        .notes-content { font-size: 15px; line-height: 1.6; color: #333; white-space: pre-wrap; }
+
+        .wallet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .coupon-card { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); padding: 20px; border-radius: 12px; color: #333; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; border: 3px solid transparent; position: relative; }
+        .coupon-card.c-blue { background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); }
+        .coupon-card.c-pink { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); }
+        .coupon-card.c-green { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); }
+        .coupon-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .coupon-card.selected { border-color: var(--mac-blue); transform: scale(1.02); }
+        .coupon-card.selected::after { content: '\f058'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: 10px; right: 10px; color: var(--mac-blue); font-size: 24px; background: white; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; }
+        .c-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; } .c-desc { font-size: 13px; opacity: 0.8; }
+
+        /* Animasi Kebelah & Menghilang (Penebusan) */
+        .coupon-card.redeemed { background: #f2f2f7 !important; border-color: #dcdde1 !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.05) !important; cursor: not-allowed; overflow: visible !important; pointer-events: none; animation: fadeOutTicket 1s forwards; }
+        @keyframes fadeOutTicket { 0%, 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.9); } }
+        .coupon-card.redeemed > .coupon-inner { opacity: 0 !important; }
+        .fly-left { position: absolute !important; top: 0; left: 0; width: 100%; height: 100%; -webkit-clip-path: polygon(0 0, 55% 0, 45% 100%, 0 100%); clip-path: polygon(0 0, 55% 0, 45% 100%, 0 100%); animation: tearLeftMac 0.8s forwards ease-in; pointer-events: none; z-index: 10; box-sizing: border-box; padding: 20px; border-radius: 12px; }
+        .fly-right { position: absolute !important; top: 0; left: 0; width: 100%; height: 100%; -webkit-clip-path: polygon(55% 0, 100% 0, 100% 100%, 45% 100%); clip-path: polygon(55% 0, 100% 0, 100% 100%, 45% 100%); animation: tearRightMac 0.8s forwards ease-in; pointer-events: none; z-index: 10; box-sizing: border-box; padding: 20px; border-radius: 12px; }
+        .fly-left > .coupon-inner, .fly-right > .coupon-inner { opacity: 1 !important; }
+        @keyframes tearLeftMac { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(-30px, 50px) rotate(-10deg); opacity: 0; } }
+        @keyframes tearRightMac { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(30px, 50px) rotate(10deg); opacity: 0; } }
+        .claimed-stamp { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); font-size: 20px; font-weight: 800; color: var(--mac-blue); opacity: 0; z-index: 1; pointer-events: none; letter-spacing: 1px; width: 100%; text-align: center; animation: stampAppearMac 0.5s 0.2s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes stampAppearMac { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        #reward-section { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; flex-direction: column; align-items: center; justify-content: center; animation: popUpCentered 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 20; }
+        @keyframes popUpCentered { from { opacity: 0; transform: translate(-50%, -40%) scale(0.8); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+        /* Modals (macOS Alert) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 100; opacity: 0; transition: 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .mac-modal { background: #ececec; width: 300px; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; overflow: hidden; transform: scale(0.95); transition: 0.3s; border: 1px solid rgba(255,255,255,0.5); }
+        .modal-overlay.active .mac-modal { transform: scale(1); }
+        .modal-content { padding: 20px; } .modal-icon { width: 50px; margin-bottom: 10px; }
+        .modal-title { font-size: 15px; font-weight: 600; margin-bottom: 5px; color: #000; } .modal-text { font-size: 13px; color: #333; margin-bottom: 0; line-height: 1.4; }
+        .modal-buttons { display: flex; border-top: 1px solid #d1d1d6; }
+        .modal-buttons button { flex: 1; padding: 12px; background: none; border: none; font-size: 15px; color: var(--mac-blue); cursor: pointer; border-right: 1px solid #d1d1d6; }
+        .modal-buttons button:last-child { border-right: none; } .modal-buttons button.primary { font-weight: 600; } .modal-buttons button:hover { background: rgba(0,0,0,0.05); }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            .window-body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid var(--mac-border); white-space: nowrap; gap: 10px;}
+            .sidebar-section { display: none; } .sidebar-item { padding: 8px 12px; }
+            .mac-window { width: 100%; height: 100%; max-width: none; max-height: none; border-radius: 0; }
+            .page { padding: 20px; } .music-app { flex-direction: column; text-align: center; gap: 20px; } .music-info { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mac-window">
+    
+    <div class="title-bar">
+        <div class="traffic-lights">
+            <span class="light close"></span>
+            <span class="light min"></span>
+            <span class="light max"></span>
+        </div>
+        <div class="window-title">Gifts for Titiess.app</div>
+    </div>
+
+    <div class="window-body">
+        
+        <div class="sidebar">
+            <div class="sidebar-section">Library</div>
+            <div class="sidebar-item active" onclick="switchTab('welcome', this)">
+                <i class="fa-solid fa-house icon-blue"></i> Home
+            </div>
+            <div class="sidebar-section">Apps</div>
+            <div class="sidebar-item" onclick="switchTab('photos', this)">
+                <i class="fa-solid fa-image icon-blue"></i> Memories
+            </div>
+            <div class="sidebar-item" onclick="switchTab('messages', this)">
+                <i class="fa-solid fa-comment icon-green"></i> Messages
+            </div>
+            <div class="sidebar-item" onclick="switchTab('music', this)">
+                <i class="fa-solid fa-music icon-pink"></i> Music
+            </div>
+            <div class="sidebar-item" onclick="switchTab('notes', this)">
+                <i class="fa-solid fa-note-sticky icon-yellow"></i> Letter
+            </div>
+            <div class="sidebar-section">Special</div>
+            <div class="sidebar-item" onclick="switchTab('coupons', this)">
+                <i class="fa-solid fa-ticket icon-dark"></i> Love Coupons
+            </div>
+        </div>
+
+        <div class="main-content" id="main-content-area">
+            
+            <div id="welcome" class="page active">
+                <div class="welcome-container">
+                    <img src="gif kucing.gif" alt="Finder Icon" class="welcome-img" style="background: white;">
+                    <h1>Halo Titiess!</h1>
+                    <p style="font-size: 16px;">Selamat datang di hadiah spesial versi desktop.<br>Silakan jelajahi menu di sebelah kiri untuk membuka hadiahmu.</p>
+                    <div style="margin-top: 30px;">
+                        <button class="mac-btn" onclick="document.querySelectorAll('.sidebar-item')[1].click()">Mulai Lihat</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="photos" class="page">
+                <h2>Memories</h2>
+                <p>Klik foto untuk memperbesar (Quick Look).</p>
+                
+                <div class="photos-grid" id="gallery-container">
+                    <div class="photo-item"><img src="fotbar bunga.jpeg" alt="Memories 1" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 2" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="biliard.jpeg" alt="Memories 3" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="fotbar dwiwara.jpeg" alt="Memories 4" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 5" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="biliard.jpeg" alt="Memories 6" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    
+                    <div class="photo-item"><img src="fotbar bunga.jpeg" alt="Memories 7" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 8" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="biliard.jpeg" alt="Memories 9" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="fotbar dwiwara.jpeg" alt="Memories 10" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 11" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="biliard.jpeg" alt="Memories 12" onerror="this.src='https://via.placeholder.com/300'"></div>
+
+                    <div class="photo-item"><img src="fotbar bunga.jpeg" alt="Memories 13" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 14" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="biliard.jpeg" alt="Memories 15" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="fotbar dwiwara.jpeg" alt="Memories 16" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 17" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="photo-item"><img src="biliard.jpeg" alt="Memories 18" onerror="this.src='https://via.placeholder.com/300'"></div>
+                </div>
+            </div>
+
+            <div id="photo-lightbox" class="lightbox-overlay">
+                <button class="lb-btn lb-close" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
+                <button class="lb-btn lb-prev" onclick="changePhoto(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <img id="lb-img" src="" alt="Zoomed Photo">
+                <button class="lb-btn lb-next" onclick="changePhoto(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <div id="messages" class="page">
+                <div style="border-bottom: 1px solid var(--mac-border); padding-bottom: 10px; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 16px; text-align: center;">Titiess <i class="fa-solid fa-circle-user" style="color: #c7c7cc;"></i></h2>
+                    <p style="margin: 0; font-size: 11px; text-align: center; color: var(--mac-text-light);">iMessage</p>
+                </div>
+                <div class="messages-app">
+                    <div class="msg-time">Today 10:41 AM</div>
+                    <div class="bubble left">Hai!</div>
+                    <div class="bubble right">Ini bunga buatmu</div>
+                    <div class="flower-imessage right"><img src="bunga.jpeg" alt="Virtual Flower" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="bubble left">Cantik kan?</div>
+                    <div class="bubble right">Sama kaya kamu hehehe</div>
+                    <div class="msg-time">11:05 AM</div>
+                    <div class="bubble right">Semoga harimu...</div>
+                    <div class="bubble left">Selalu...</div>
+                    <div class="bubble right">Menyenangkan! Semangat terus! ✨</div>
+                </div>
+            </div>
+            <div id="music" class="page">
+                <div class="music-app">
+                    <a href="https://youtu.be/iygXgP2nOF4?si=4LNdD9qsFbOHRo_F" target="_blank" title="Buka lagu di YouTube">
+                        <div class="album-art"><img src="NIKI2.jpg" alt="Album Art" onerror="this.src='https://via.placeholder.com/250'"></div>
+                    </a>
+                    <div class="music-info">
+                        <h2 style="margin-bottom: 5px;">Take A Chance With Me</h2>
+                        <p style="color: #ff2d55; font-size: 16px; font-weight: 500; margin-top: 0;">NIKI</p>
+                        <div class="progress-bar"><div class="progress-fill"></div></div>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--mac-text-light);">
+                            <span>1:15</span><span>-3:48</span>
+                        </div>
+                        <div class="music-controls">
+                            <i class="fa-solid fa-backward-step"></i>
+                            <i class="fa-solid fa-circle-play" style="font-size: 40px; color: var(--mac-blue); cursor: pointer;"></i>
+                            <i class="fa-solid fa-forward-step"></i>
+                        </div>
+                        <p style="font-size: 11px; color: var(--mac-text-light); margin-top: 30px;">(Klik cover album untuk memutar lagu lengkap)</p>
+                    </div>
+                </div>
+            </div>
+            <div id="notes" class="page" style="padding: 0;">
+                <div class="notes-app">
+                    <p style="color: #999; font-size: 12px; margin-top: 0;">March 14, 2026 at 5:31 AM</p>
+                    <div class="notes-content"><h2>A Letter for You 💌</h2>
+Halo Titiess,
+
+Aku pernah percaya seseorang bisa datang begitu saja, tanpa rencana, lalu pelan-pelan mengubah cara kita memandang hidup. Dan aku menemukan keyakinan itu lewat dirimu.
+
+Terima kasih sudah hadir di momen-momen sederhana, bahkan ketika aku merasa tidak bisa berbuat apa-apa. Di saat aku kebingungan, ragu, dan merasa kecil, kamu muncul dengan caramu berpikir yang begitu kreatif dan berbeda dariku. Dari tugas yang awalnya terasa berat, aku justru menemukan kekaguman: pada caramu melihat, mencipta, dan menghidupkan sesuatu yang tak pernah bisa kulakukan sendiri.
+
+Aku belajar bahwa perbedaan bukan jarak. Aku yang terbiasa berpikir dengan logika, dan kamu yang hidup dengan imajinasi—ternyata bisa saling melengkapi.
+
+Terima kasih sudah mau berkenalan denganku, sudah berteman, dan sudah menjadi bagian kecil namun berarti dalam hidupku. Semoga kamu selalu sehat, dan semoga senyummu tak pernah kehilangan alasannya.
+
+Take A Chance With Me Someday, I'll be here.
+
+Yours Truly,
+Luqman</div>
+                </div>
+            </div>
+            <div id="coupons" class="page">
+                <h2>Love Coupons</h2>
+                <p>Klik kupon yang mau kamu klaim hari ini, lalu tekan tombol di bawah.</p>
+                <div class="wallet-grid">
+                    <div class="coupon-card c-pink" onclick="toggleCoupon(this)">
+                        <div class="coupon-inner"><div class="c-title">Picnic Date</div><div class="c-desc">Grab a blanket</div></div>
+                    </div>
+                    <div class="coupon-card c-blue" onclick="toggleCoupon(this)">
+                        <div class="coupon-inner"><div class="c-title">Ice Cream</div><div class="c-desc">Where do you want to go?</div></div>
+                    </div>
+                    <div class="coupon-card c-green" onclick="toggleCoupon(this)">
+                        <div class="coupon-inner"><div class="c-title">Movie Night</div><div class="c-desc">You pick the movie</div></div>
+                    </div>
+                    <div class="coupon-card" onclick="toggleCoupon(this)">
+                        <div class="coupon-inner"><div class="c-title">Game Night</div><div class="c-desc">Anything you want to play</div></div>
+                    </div>
+                </div>
+                <div style="margin-top: 40px; text-align: right; border-top: 1px solid var(--mac-border); padding-top: 20px;">
+                    <button class="mac-btn-outline" style="margin-right: 10px;" onclick="resetCoupons()">Reset</button>
+                    <button class="mac-btn" onclick="showMacAlert()">Klaim Kupon</button>
+                </div>
+            </div>
+            <div id="redemption" class="page">
+                <div id="redeem-header">
+                    <h2>Waktunya Eksekusi! 🚀</h2>
+                    <p id="redeem-instruction">Klik tiket di bawah ini untuk merobek dan menandainya sebagai "Selesai".</p>
+                </div>
+                <div class="wallet-grid" id="redeem-container"></div>
+                <div id="reward-section">
+                    <i class="fa-solid fa-gift" style="font-size: 60px; color: var(--mac-blue); margin-bottom: 20px;"></i>
+                    <h1 style="margin-top: 0; font-size: 32px;">Kejutan Tambahan!</h1>
+                    <div id="reward-text-mac" style="background: rgba(0, 122, 255, 0.05); border: 1px solid var(--mac-blue); padding: 25px; border-radius: 12px; color: var(--mac-text); font-size: 16px; display: inline-block; max-width: 400px; text-align: center; margin-bottom: 30px;">
+                    </div>
+                    <div>
+                        <button class="mac-btn" style="padding: 12px 24px; font-size: 15px;" onclick="window.location.reload()">Selesai & Kembali ke Awal</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="macModal">
+    <div class="mac-modal">
+        <div class="modal-content">
+            <img src="gif kucing.gif" class="modal-icon" alt="App Icon" onerror="this.style.display='none'">
+            <div class="modal-title" id="alertTitle">Konfirmasi Klaim</div>
+            <p class="modal-text" id="alertDesc">Yakin mau klaim kupon yang dipilih?</p>
+        </div>
+        <div class="modal-buttons" id="alertBtns">
+            <button onclick="closeModal()">Batal</button>
+            <button class="primary" onclick="prepareRedemption()">Klaim</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // FUNGSI SWITCH TAB
+    function switchTab(pageId, element) {
+        document.querySelectorAll('.sidebar-item').forEach(item => { item.classList.remove('active'); });
+        if(element) element.classList.add('active');
+        document.querySelectorAll('.page').forEach(page => { page.classList.remove('active'); });
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    // ==========================================
+    // FUNGSI LIGHTBOX GALLERY (Ultra Smooth)
+    // ==========================================
+    let currentPhotoIndex = 0;
+    let photosArray = [];
+    let isTransitioning = false; // Kunci klik klik ganda
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const photoElements = document.querySelectorAll('#gallery-container .photo-item img');
+        
+        photoElements.forEach((img, index) => {
+            photosArray.push(img.src);
+            img.parentElement.onclick = () => openLightbox(index);
+        });
+    });
+
+    function openLightbox(index) {
+        currentPhotoIndex = index;
+        const lbImg = document.getElementById('lb-img');
+        
+        // Memastikan opacity gambar 1 saat dibuka
+        lbImg.style.opacity = 1;
+        lbImg.src = photosArray[currentPhotoIndex];
+        
+        // Membuka Overlay Lightbox
+        document.getElementById('photo-lightbox').classList.add('active');
+        
+        // MENGUNCI SCROLL dengan CSS Class
+        document.getElementById('main-content-area').classList.add('no-scroll');
+    }
+
+    function closeLightbox() {
+        // Menutup Overlay Lightbox
+        document.getElementById('photo-lightbox').classList.remove('active');
+        
+        // MEMBUKA KUNCI SCROLL kembali
+        document.getElementById('main-content-area').classList.remove('no-scroll');
+    }
+
+    // FUNGSI GESER FOTO (LOGIKA BARU UNTUK SMOOTHNESS)
+    function changePhoto(direction) {
+        if (isTransitioning) return; // Kunci jika sedang animasi
+        isTransitioning = true;
+
+        const lbImg = document.getElementById('lb-img');
+        
+        // Step 1: Fade Out Gambar Lama (Memicu transisi CSS)
+        lbImg.style.opacity = 0;
+
+        // Hitung index baru
+        currentPhotoIndex += direction;
+        if (currentPhotoIndex < 0) {
+            currentPhotoIndex = photosArray.length - 1;
+        } else if (currentPhotoIndex >= photosArray.length) {
+            currentPhotoIndex = 0;
+        }
+
+        // Step 2: Menunggu Fade Out selesai (300ms sesuai CSS) sebelum ganti SRC
+        setTimeout(() => {
+            // Ganti Sumber Gambar
+            lbImg.src = photosArray[currentPhotoIndex];
+            
+            // Step 3: Menunggu gambar baru Selesai Dimuat penuh agar tidak kedip
+            lbImg.onload = function() {
+                // Step 4: Fade In Gambar Baru
+                lbImg.style.opacity = 1;
+                // Buka kunci klik
+                isTransitioning = false;
+            };
+
+            // Fallback jika gambar cepat dimuat (cached)
+            if (lbImg.complete) {
+                lbImg.style.opacity = 1;
+                isTransitioning = false;
+            }
+
+        }, 300); // Sinkron durasi transisi di CSS (0.3s)
+    }
+
+    // Fungsi Tiket/Coupons (tetap sama)
+    function toggleCoupon(element) { element.classList.toggle('selected'); }
+    function resetCoupons() { document.querySelectorAll('.coupon-card').forEach(card => { card.classList.remove('selected'); }); }
+    function showMacAlert() {
+        const selectedCount = document.querySelectorAll('#coupons .coupon-card.selected').length;
+        if(selectedCount === 0) {
+            document.getElementById('alertTitle').innerText = "Tidak Ada Kupon Dipilih";
+            document.getElementById('alertDesc').innerText = "Silakan klik minimal satu kupon sebelum menekan tombol klaim.";
+            document.getElementById('alertBtns').innerHTML = '<button class="primary" onclick="closeModal()">OK</button>';
+            document.getElementById('macModal').classList.add('active');
+            return;
+        }
+        document.getElementById('alertTitle').innerText = "Konfirmasi Klaim";
+        document.getElementById('alertDesc').innerText = "Yakin mau klaim " + selectedCount + " kupon ini sekarang?";
+        document.getElementById('alertBtns').innerHTML = `<button onclick="closeModal()">Batal</button><button class="primary" onclick="prepareRedemption()">Klaim</button>`;
+        document.getElementById('macModal').classList.add('active');
+    }
+    function closeModal() { document.getElementById('macModal').classList.remove('active'); }
+    let totalRedeemedTickets = 0;
+    function prepareRedemption() {
+        closeModal();
+        const selected = document.querySelectorAll('#coupons .coupon-card.selected');
+        const container = document.getElementById('redeem-container');
+        container.innerHTML = ''; 
+        totalRedeemedTickets = selected.length;
+        selected.forEach(card => {
+            let clone = card.cloneNode(true);
+            clone.classList.remove('selected');
+            clone.removeAttribute('onclick');
+            let bgClass = '';
+            if(clone.classList.contains('c-pink')) bgClass = 'c-pink';
+            else if(clone.classList.contains('c-blue')) bgClass = 'c-blue';
+            else if(clone.classList.contains('c-green')) bgClass = 'c-green';
+            clone.onclick = function() {
+                if(!this.classList.contains('redeemed')) {
+                    let leftPart = document.createElement('div');
+                    leftPart.className = 'coupon-card fly-left ' + bgClass;
+                    leftPart.innerHTML = this.innerHTML;
+                    let rightPart = document.createElement('div');
+                    rightPart.className = 'coupon-card fly-right ' + bgClass;
+                    rightPart.innerHTML = this.innerHTML;
+                    // Ikon fixed fa-circle-check
+                    let stamp = document.createElement('div');
+                    stamp.className = 'claimed-stamp';
+                    stamp.innerHTML = 'TERKLAIM <i class="fa-solid fa-circle-check"></i>';
+                    this.appendChild(leftPart);
+                    this.appendChild(rightPart);
+                    this.appendChild(stamp);
+                    this.classList.add('redeemed');
+                    setTimeout(() => {
+                        this.remove(); 
+                        checkIfAllCleared(); 
+                    }, 1000); 
+                }
+            };
+            container.appendChild(clone);
+        });
+        document.getElementById('reward-section').style.display = 'none';
+        document.getElementById('redeem-header').style.display = 'block';
+        switchTab('redemption', null);
+    }
+    function checkIfAllCleared() {
+        const remainingTickets = document.querySelectorAll('#redeem-container > .coupon-card').length;
+        if(remainingTickets === 0) {
+            document.getElementById('redeem-header').style.display = 'none';
+            let msg = "";
+            if (totalRedeemedTickets === 1) { msg = "Wah ambil 1 doang nih? Tumben ga maruk wkwk.<br><br>Yaudah dapet bonus <b>1x peluk ekstra</b> deh! 🤗"; } 
+            else if (totalRedeemedTickets === 2) { msg = "Pilih 2 pas banget buat habisin weekend bareng!<br><br>Bonusnya dapet <b>traktiran makanan kesukaanmu!</b> 🍔"; } 
+            else if (totalRedeemedTickets === 3) { msg = "Wuih borong 3 tiket! Siap-siap aku capek nemenin kamu seharian yaa 😂.<br><br>Bonusnya aku bakal <b>nurutin 1 permintaan bebas</b> kamu!"; } 
+            else { msg = "MARUK ALERT 🚨! Diborong semua dong ahaha.<br><br>Gapapa khusus buat kamu, dapet VIP Pass: <b>Bebas manja seharian full!</b> ❤️"; }
+            document.getElementById('reward-text-mac').innerHTML = msg;
+            document.getElementById('reward-section').style.display = 'flex';
+        }
+    }
+</script>
+
+</body>
+</html>
