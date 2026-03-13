@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surprise for You - macOS Big Sur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Surprise for Tities</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -21,45 +21,38 @@
             --mac-text-light: #7c7c80;
             --mac-selection: #0063e1;
 
-            /* KURSOR CUSTOM MACOS (SVG Base64 Tahan Banting) */
-            /* 1. Kursor Panah Default (Arrow) */
+            /* KURSOR CUSTOM MACOS */
             --mac-cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath fill='%23000000' stroke='%23FFFFFF' stroke-width='1.5' stroke-linejoin='round' d='M 2,2 L 2,22 L 7.5,15.5 L 12.5,25 L 16,23.5 L 11,14.5 L 19,14.5 Z'/%3E%3C/svg%3E") 2 2, default;
-            
-            /* 2. Kursor Jari Telunjuk (Pointer/Hand) */
             --mac-cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath fill='%23000000' stroke='%23FFFFFF' stroke-width='1.5' stroke-linejoin='round' d='M 12,10 C 12,8 15,8 15,10 L 15,14 C 16,13 18,13 18,14 L 18,15 C 19,14 21,14 21,15 L 21,16 C 22,15 24,15 24,16 L 24,22 C 24,26 21,28 17,28 L 12,28 C 9,28 6,25 5,22 L 3,18 C 2,17 4,16 5,17 L 8,20 L 8,10 C 8,8 11,8 11,10 L 11,14 L 12,14 L 12,10 Z'/%3E%3C/svg%3E") 14 8, pointer;
         }
 
         /* Body (Background Luar) - Menggunakan Kursor Default OS (Windows) */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+            margin: 0; padding: 0; 
+            height: 100vh; 
+            height: 100dvh; /* FIX HP: Menyesuaikan tinggi dinamis address bar browser HP */
+            display: flex; justify-content: center; align-items: center;
             background-color: #a4c8e1; 
             background-image: var(--mac-bg);
             background-size: cover; background-position: center; background-repeat: no-repeat;
             -webkit-font-smoothing: antialiased; overflow: hidden;
-            cursor: default; /* Kursor normal Windows */
+            cursor: default;
         }
 
-        /* Jendela macOS Utama (Di Dalam Jendela Menggunakan Kursor macOS) */
+        /* Jendela macOS Utama */
         .mac-window {
             width: 900px; height: 600px; max-width: 95vw; max-height: 90vh; background: var(--window-bg); border-radius: 10px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1); display: flex; flex-direction: column;
             overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            cursor: var(--mac-cursor-default); /* Aktifkan kursor panah macOS */
-        }
-
-        /* Overlay yang menutupi jendela juga harus pakai kursor macOS */
-        .modal-overlay, .lightbox-overlay {
             cursor: var(--mac-cursor-default);
         }
 
-        /* Semua Elemen yang bisa di-klik di dalam jendela pakai kursor Tangan macOS */
-        button, a, .sidebar-item, .coupon-card:not(.redeemed), .album-art, .fa-circle-play, .light, .lb-btn {
-            cursor: var(--mac-cursor-pointer) !important;
-        }
+        .modal-overlay, .lightbox-overlay { cursor: var(--mac-cursor-default); }
+        button, a, .sidebar-item, .coupon-card:not(.redeemed), .album-art, .fa-circle-play, .light, .lb-btn { cursor: var(--mac-cursor-pointer) !important; }
 
         /* Title Bar */
-        .title-bar { height: 50px; background: transparent; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--mac-border); position: relative; }
+        .title-bar { height: 50px; background: transparent; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--mac-border); position: relative; flex-shrink: 0; }
         .traffic-lights { display: flex; gap: 8px; }
         .light { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
         .close { background-color: #ff5f56; border: 0.5px solid #e0443e; }
@@ -73,7 +66,7 @@
         /* Sidebar Kiri */
         .sidebar { width: 220px; background: var(--sidebar-bg); border-right: 1px solid var(--mac-border); padding: 15px 10px; box-sizing: border-box; display: flex; flex-direction: column; gap: 5px; }
         .sidebar-section { font-size: 11px; font-weight: 600; color: var(--mac-text-light); text-transform: uppercase; margin: 15px 0 5px 10px; letter-spacing: 0.5px; }
-        .sidebar-item { padding: 8px 10px; border-radius: 6px; font-size: 13px; color: var(--mac-text); display: flex; align-items: center; gap: 10px; transition: background 0.2s, color 0.2s; }
+        .sidebar-item { padding: 8px 10px; border-radius: 6px; font-size: 13px; color: var(--mac-text); display: flex; align-items: center; gap: 10px; transition: background 0.2s, color 0.2s; user-select: none; -webkit-user-select: none; }
         .sidebar-item:hover { background: rgba(0,0,0,0.05); }
         .sidebar-item.active { background: var(--mac-selection); color: white; font-weight: 500; }
         .sidebar-item.active i { color: white !important; }
@@ -81,12 +74,10 @@
         .icon-blue { color: var(--mac-blue); } .icon-green { color: #34c759; } .icon-pink { color: #ff2d55; } .icon-yellow { color: #ffcc00; } .icon-dark { color: #333; }
 
         /* Area Konten Utama */
-        .main-content { flex: 1; background: #ffffff; position: relative; overflow-y: auto; overflow-x: hidden; }
-        
-        /* CLASS UNTUK MENGUNCI SCROLL SAAT PREVIEW */
+        .main-content { flex: 1; background: #ffffff; position: relative; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
         .no-scroll { overflow: hidden !important; }
 
-        .page { display: none; padding: 40px; box-sizing: border-box; height: 100%; animation: fadeIn 0.4s ease; position: relative; }
+        .page { display: none; padding: 40px; box-sizing: border-box; min-height: 100%; animation: fadeIn 0.4s ease; position: relative; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -102,21 +93,22 @@
         .mac-btn-outline:hover { background: #f2f2f7; }
 
         /* --- STYLING TIAP HALAMAN --- */
-        .welcome-container { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
+        .welcome-container { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 400px;}
         .welcome-img { width: 100px; margin-bottom: 20px; border-radius: 15px; }
 
         /* PHOTOS GALLERY 18 GRID */
         .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; padding-bottom: 30px; }
-        .photo-item { aspect-ratio: 1/1; background: #f2f2f7; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--mac-border); transition: transform 0.2s, box-shadow 0.2s; cursor: zoom-in !important; /* Kursor khas zoom foto */ }
+        .photo-item { aspect-ratio: 1/1; background: #f2f2f7; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--mac-border); transition: transform 0.2s, box-shadow 0.2s; cursor: zoom-in !important; }
         .photo-item:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 2; } 
         .photo-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* LIGHTBOX GALLERY (Zoom Foto Ultra Smooth) */
+        /* LIGHTBOX GALLERY (Fixed Position untuk HP) */
         .lightbox-overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            position: fixed; /* FIX HP: Menutupi layar HP secara utuh meski lagi di-scroll */
+            top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; 
             background: rgba(255, 255, 255, 0.2); 
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); 
-            z-index: 50; display: none; justify-content: center; align-items: center; opacity: 0; 
+            z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; 
             transition: opacity 0.4s ease; 
         }
         .lightbox-overlay.active { display: flex; opacity: 1; }
@@ -145,15 +137,14 @@
         .bubble.right { align-self: flex-end; background: var(--mac-blue); color: white; border-bottom-right-radius: 4px; }
         .flower-imessage { align-self: flex-start; margin: 10px 0; max-width: 250px; } .flower-imessage img { width: 100%; border-radius: 12px; border: 1px solid var(--mac-border); }
 
-        .music-app { display: flex; gap: 40px; align-items: center; justify-content: center; height: 100%; }
+        .music-app { display: flex; gap: 40px; align-items: center; justify-content: center; min-height: 400px; height: 100%; }
         .album-art { width: 220px; height: 220px; border-radius: 10px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); overflow: hidden; transition: 0.3s; }
         .album-art:hover { transform: translateY(-5px); } .album-art img { width: 100%; height: 100%; object-fit: cover; }
-        .music-info { max-width: 300px; }
+        .music-info { max-width: 300px; width: 100%; }
         .progress-bar { width: 100%; height: 4px; background: #e5e5ea; border-radius: 2px; margin: 20px 0 10px; }
         .progress-fill { width: 30%; height: 100%; background: #333; border-radius: 2px; }
-        .music-controls { display: flex; gap: 30px; align-items: center; font-size: 24px; color: #333; margin-top: 20px; }
+        .music-controls { display: flex; gap: 30px; align-items: center; justify-content: center; font-size: 24px; color: #333; margin-top: 20px; }
         
-        /* Cursor kustom teks (I-Beam) bawaan OS dibiarkan untuk area ketikan agar realistis */
         .notes-app { background: #fef8a0; padding: 40px; border-radius: 5px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); min-height: 100%; box-sizing: border-box; font-family: "SF Pro Text", sans-serif; }
         .notes-content { font-size: 15px; line-height: 1.6; color: #333; white-space: pre-wrap; cursor: text; }
 
@@ -167,7 +158,6 @@
         .coupon-card.selected::after { content: '\f058'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: 10px; right: 10px; color: var(--mac-blue); font-size: 24px; background: white; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; }
         .c-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; } .c-desc { font-size: 13px; opacity: 0.8; }
 
-        /* Animasi Kebelah & Menghilang (Penebusan) */
         .coupon-card.redeemed { background: #f2f2f7 !important; border-color: #dcdde1 !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.05) !important; overflow: visible !important; pointer-events: none; animation: fadeOutTicket 1s forwards; }
         @keyframes fadeOutTicket { 0%, 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.9); } }
         .coupon-card.redeemed > .coupon-inner { opacity: 0 !important; }
@@ -178,11 +168,12 @@
         @keyframes tearRightMac { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(30px, 50px) rotate(10deg); opacity: 0; } }
         .claimed-stamp { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); font-size: 20px; font-weight: 800; color: var(--mac-blue); opacity: 0; z-index: 1; pointer-events: none; letter-spacing: 1px; width: 100%; text-align: center; animation: stampAppearMac 0.5s 0.2s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes stampAppearMac { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        
         #reward-section { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; flex-direction: column; align-items: center; justify-content: center; animation: popUpCentered 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 20; }
         @keyframes popUpCentered { from { opacity: 0; transform: translate(-50%, -40%) scale(0.8); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 
         /* Modals (macOS Alert) */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 100; opacity: 0; transition: 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 9000; opacity: 0; transition: 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; }
         .mac-modal { background: #ececec; width: 300px; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; overflow: hidden; transform: scale(0.95); transition: 0.3s; border: 1px solid rgba(255,255,255,0.5); }
         .modal-overlay.active .mac-modal { transform: scale(1); }
@@ -192,13 +183,31 @@
         .modal-buttons button { flex: 1; padding: 12px; background: none; border: none; font-size: 15px; color: var(--mac-blue); border-right: 1px solid #d1d1d6; }
         .modal-buttons button:last-child { border-right: none; } .modal-buttons button.primary { font-weight: 600; } .modal-buttons button:hover { background: rgba(0,0,0,0.05); }
 
-        /* Responsif */
+        /* ========================================= */
+        /* RESPONSIVE KHUSUS MOBILE (HP) FIX */
+        /* ========================================= */
         @media (max-width: 768px) {
             .window-body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid var(--mac-border); white-space: nowrap; gap: 10px;}
-            .sidebar-section { display: none; } .sidebar-item { padding: 8px 12px; }
-            .mac-window { width: 100%; height: 100%; max-width: none; max-height: none; border-radius: 0; }
-            .page { padding: 20px; } .music-app { flex-direction: column; text-align: center; gap: 20px; } .music-info { max-width: 100%; }
+            
+            /* FIX 1: Sidebar HP tidak tertekan, scroll mulus ke samping */
+            .sidebar { width: 100%; flex-shrink: 0; height: auto; flex-direction: row; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid var(--mac-border); white-space: nowrap; gap: 10px; -webkit-overflow-scrolling: touch; }
+            .sidebar::-webkit-scrollbar { display: none; } /* Hilangkan garis scrollbar agar bersih */
+            .sidebar-section { display: none; } 
+            .sidebar-item { padding: 8px 12px; }
+            
+            /* FIX 2: Tinggi Mac Window mengambil full layar dng 100dvh */
+            .mac-window { width: 100%; height: 100vh; height: 100dvh; max-width: none; max-height: none; border-radius: 0; border: none; }
+            
+            /* FIX 3: Tambah padding-bottom ekstra (100px) agar bisa di-scroll sampai ke bawah tombol */
+            .page { padding: 20px 20px 100px 20px; } 
+            
+            .music-app { flex-direction: column; text-align: center; gap: 20px; min-height: auto; } .music-info { max-width: 100%; }
+            
+            /* FIX 4: Grid Foto di HP diperkecil ukurannya */
+            .photos-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+            
+            /* Jaga konten tulisan Notes tidak terpotong */
+            .notes-app { padding: 20px 20px 40px 20px; }
         }
     </style>
 </head>
@@ -280,13 +289,6 @@
                     <div class="photo-item"><img src="cover-memories.jpg" alt="Memories 17" onerror="this.src='https://via.placeholder.com/300'"></div>
                     <div class="photo-item"><img src="biliard.jpeg" alt="Memories 18" onerror="this.src='https://via.placeholder.com/300'"></div>
                 </div>
-            </div>
-
-            <div id="photo-lightbox" class="lightbox-overlay">
-                <button class="lb-btn lb-close" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
-                <button class="lb-btn lb-prev" onclick="changePhoto(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                <img id="lb-img" src="" alt="Zoomed Photo">
-                <button class="lb-btn lb-next" onclick="changePhoto(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
 
             <div id="messages" class="page">
@@ -395,6 +397,13 @@ Luqman</div>
     </div>
 </div>
 
+<div id="photo-lightbox" class="lightbox-overlay">
+    <button class="lb-btn lb-close" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
+    <button class="lb-btn lb-prev" onclick="changePhoto(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+    <img id="lb-img" src="" alt="Zoomed Photo">
+    <button class="lb-btn lb-next" onclick="changePhoto(1)"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
 <div class="modal-overlay" id="macModal">
     <div class="mac-modal">
         <div class="modal-content">
@@ -410,15 +419,19 @@ Luqman</div>
 </div>
 
 <script>
+    // FUNGSI SWITCH TAB
     function switchTab(pageId, element) {
         document.querySelectorAll('.sidebar-item').forEach(item => { item.classList.remove('active'); });
         if(element) element.classList.add('active');
         document.querySelectorAll('.page').forEach(page => { page.classList.remove('active'); });
         document.getElementById(pageId).classList.add('active');
+        
+        // Reset scroll position ke paling atas saat pindah tab
+        document.getElementById('main-content-area').scrollTop = 0;
     }
 
     // ==========================================
-    // FUNGSI LIGHTBOX GALLERY (Ultra Smooth)
+    // FUNGSI LIGHTBOX GALLERY
     // ==========================================
     let currentPhotoIndex = 0;
     let photosArray = [];
